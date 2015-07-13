@@ -1,0 +1,17 @@
+{
+  "name": "tg_stats_bot",
+  "version": "1.0.0",
+  "description": "Telegram Group Messaging Stats",
+  "main": "bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "https://github.com/Souler/tg-group-stats-bot",
+  "author": "Juan Jose Herrero Barbosa <soulerhyd@gmail.com>",
+  "license": "LGPL-3.0",
+  "dependencies": {
+    "node-telegram-bot-api": "~0.10.0",
+    "mongoose": "~4.0.7",
+    "mongoose-find-one-or-create": "~0.2.0"
+  }
+}
