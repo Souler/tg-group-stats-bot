@@ -10,8 +10,9 @@
   "author": "Juan Jose Herrero Barbosa <soulerhyd@gmail.com>",
   "license": "LGPL-3.0",
   "dependencies": {
-    "node-telegram-bot-api": "~0.10.0",
+    "moment": "^2.10.3",
     "mongoose": "~4.0.7",
-    "mongoose-find-one-or-create": "~0.2.0"
+    "mongoose-find-one-or-create": "~0.2.0",
+    "node-telegram-bot-api": "~0.10.0"
   }
 }
