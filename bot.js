@@ -98,7 +98,6 @@ var updateAverageLength = function(msg, stats) {
 var updateAverageResponseTime = function(stats) {
     var rightNow = moment();
     var difference = rightNow.diff(stats.last_message_timestamp, 'seconds')
-    console.log(difference);
     stats.last_message_timestamp = rightNow
     stats.average_response_time = Math.ceil((stats.average_response_time + difference) / 2);
 }
