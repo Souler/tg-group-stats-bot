@@ -15,6 +15,8 @@ var startBot = function() { // Script entry point
     if (!token)
         throw new Error('No TELEGRAM_API_TOKEN enviroment variable.');
 
+    connectDatabase();
+
     var bot = new TelegramBot(token, {polling: true});
     bot.on('message', function (msg) {
         if (!msg || !msg.chat || !msg.from)
@@ -47,7 +49,12 @@ var connectDatabase = function() {
     UserStatsSchema.plugin(findOneOrCreate);
 
     var db = mongoose.connect('mongodb://localhost/telegram-stats');
-    var UserStats = db.model('UserStats', UserStatsSchema);
+    db.connection.on('error', console.error);
+    db.connection.on('open', function() {
+        console.info('Correctly connected to database')
+    });
+    // TODO: Think a proper way to solve this once moved to files
+    global.UserStats = db.model('UserStats', UserStatsSchema);
 }
 
 var sendGroupStats = function(msg) {
@@ -66,7 +73,7 @@ var sendGroupStats = function(msg) {
         res += f(Strings.TOTAL_MESSAGES, totalMessages);
 
 
-        console.log("Sent for stats for %s(%d)", msg.chat.title, msg.chat.id);
+        console.info("Sent for stats for %s(%d)", msg.chat.title, msg.chat.id);
         bot.sendMessage(msg.chat.id, res);
     })
 }
@@ -81,12 +88,12 @@ var updateUserStats = function(msg) {
 
         stats.message_count++;
 
-        updateUserName(msg,stats);
+        updateUserName(msg, stats);
         updateAverageLength(msg, stats);
         updateAverageResponseTime(stats);
         updateFRR(stats);
 
-        console.log('New message by %s(%d) at %s.', stats.username, stats.user_id, msg.chat.title || stats.chat_id);
+        console.info('New message by %s(%d) at %s.', stats.username, stats.user_id, msg.chat.title || stats.chat_id);
 
         stats.save();
     })
