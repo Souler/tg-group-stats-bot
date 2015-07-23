@@ -17,18 +17,26 @@ var startBot = function() { // Script entry point
 
     connectDatabase();
 
-    var bot = new TelegramBot(token, {polling: true});
-    bot.on('message', function (msg) {
-        if (!msg || !msg.chat || !msg.from)
-            return;
+    global.bot = new TelegramBot(token, {polling: true});
+    bot.getMe()
+    .then(function (me) {
+        console.info('Hi! My name is @%s and I\'m ready to serve', me.username);
+        bot.on('message', function (msg) {
+            if (!msg || !msg.chat || !msg.from)
+                return;
 
-        if (msg.chat.id > 0) // its not a group
-            return bot.sendMessage(msg.chat.id, 'Use /stats in a group for seeing me doing stuff!');
+            if (msg.chat.id > 0) // its not a group
+                return bot.sendMessage(msg.chat.id, 'Use /stats in a group for seeing me doing stuff!');
 
-        if (msg.text && msg.text == '/stats')
-            sendGroupStats(msg);
-        else
-            updateUserStats(msg);
+            // This should fix the problem with the bot not responding to /sta
+            if (msg.text && msg.text.indexOf('@' + me.username) >= 0)
+                msg.text = msg.text.replace(new RegExp('@' + me.username, 'gi'), '');
+
+            if (msg.text && msg.text == '/stats')
+                sendGroupStats(msg);
+            else
+                updateUserStats(msg);
+        });
     });
 }
 
