@@ -26,7 +26,7 @@ var startBot = function() { // Script entry point
         if (msg.text && msg.text == '/stats')
             sendGroupStats(msg);
         else
-            updateAllUserStats(msg);
+            updateUserStats(msg);
     });
 }
 
@@ -71,7 +71,7 @@ var sendGroupStats = function(msg) {
     })
 }
 
-var updateAllUserStats = function(msg) {
+var updateUserStats = function(msg) {
     var where = { user_id: msg.from.id, group_id: msg.chat.id };
 
     UserStats
