@@ -5,6 +5,7 @@ var mongoose = require('mongoose');
 var moment = require('moment');
 var findOneOrCreate = require('mongoose-find-one-or-create');
 var TelegramBot = require('node-telegram-bot-api');
+var Strings = require('./strings.js');
 
 var f = util.format;
 
@@ -53,11 +54,11 @@ var sendGroupStats = function(msg) {
 
         var res = f('Stats for %s by user:\n', msg.chat.title);
         stats.forEach(function(stat) {
-            res += f(strings.userMessagesAndAverageLength, stat.username, stat.message_count, stat.average_message_length);
-            res += f(strings.userFriendshipRating, stat.user_frr);
-            res += f(strings.averageResponseTime, stat.average_response_time);
+            res += f(Strings.USER_MESSAGES_REPORT, stat.username, stat.message_count, stat.average_message_length);
+            res += f(Strings.USER_FRIENDSHIP_RATING, stat.user_frr);
+            res += f(Strings.AVERAGE_RESPONSE_TIME, stat.average_response_time);
         })
-        res += f(strings.totalMessages, totalMessages);
+        res += f(Strings.TOTAL_MESSAGES, totalMessages);
 
 
         console.log("Sent for stats for %s(%d)", msg.chat.title, msg.chat.id);
@@ -110,12 +111,4 @@ var updateFRR = function(stats) {
 var updateUserName = function(msg, stats) {
     // Update the username to the most proper one available
     stats.username = msg.from.username || msg.from.first_name || msg.from.id;
-}
-
-var strings = {
-    averageResponseTime: 'Average Response Time: %d\n',
-    totalMessages : 'Total messages sent: %d.',
-    userFriendshipRating : 'Friendship Rating: %d.\n',
-    userMessagesAndAverageLength: '@%s has sent %d messages, with an average length of %d.\n',
-
 }
