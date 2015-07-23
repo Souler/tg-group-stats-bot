@@ -9,41 +9,46 @@ var Strings = require('./strings.js');
 
 var f = util.format;
 
-var token = process.env.TELEGRAM_API_TOKEN;
+var startBot = function() { // Script entry point
+    var token = process.env.TELEGRAM_API_TOKEN;
 
-if (!token)
-    throw new Error('No TELEGRAM_API_TOKEN enviroment variable.');
+    if (!token)
+        throw new Error('No TELEGRAM_API_TOKEN enviroment variable.');
 
-var db = mongoose.connect('mongodb://localhost/telegram-stats');
-var UserStatsSchema =  mongoose.Schema({
-    user_id: Number,
-    group_id: Number,
-    username: { type: String, default: null },
-    message_count: { type: Number, default: 0 },
-    average_message_length: { type: Number, default: null },
-    last_message_timestamp: { type: Date, default: 0 },
-    average_response_time: { type: Number, default: 0 },
-    user_frr: { type: Number, default: 0 }
-});
+    var bot = new TelegramBot(token, {polling: true});
+    bot.on('message', function (msg) {
+        if (!msg || !msg.chat || !msg.from)
+            return;
 
-UserStatsSchema.index({ user_id: 1, group_id: 1 }, { unique: true });
-UserStatsSchema.plugin(findOneOrCreate);
+        if (msg.chat.id > 0) // its not a group
+            return bot.sendMessage(msg.chat.id, 'Use /stats in a group for seeing me doing stuff!');
 
-var UserStats = db.model('UserStats', UserStatsSchema);
+        if (msg.text && msg.text == '/stats')
+            sendGroupStats(msg);
+        else
+            updateAllUserStats(msg);
+    });
+}
 
-var bot = new TelegramBot(token, {polling: true});
-bot.on('message', function (msg) {
-    if (!msg || !msg.chat || !msg.from)
-        return;
+var connectDatabase = function() {
+    // TODO: Move models to a directory and a file per model
+    var UserStatsSchema =  mongoose.Schema({
+        user_id: Number,
+        group_id: Number,
+        username: { type: String, default: null },
+        message_count: { type: Number, default: 0 },
+        average_message_length: { type: Number, default: null },
+        last_message_timestamp: { type: Date, default: 0 },
+        average_response_time: { type: Number, default: 0 },
+        user_frr: { type: Number, default: 0 }
+    });
 
-    if (msg.chat.id > 0) // its not a group
-        return bot.sendMessage(msg.chat.id, 'Use /stats in a group for seeing me doing stuff!');
+    UserStatsSchema.index({ user_id: 1, group_id: 1 }, { unique: true });
+    UserStatsSchema.plugin(findOneOrCreate);
 
-    if (msg.text && msg.text == '/stats')
-        sendGroupStats(msg);
-    else
-        updateAllUserStats(msg);
-});
+    var db = mongoose.connect('mongodb://localhost/telegram-stats');
+    var UserStats = db.model('UserStats', UserStatsSchema);
+}
 
 var sendGroupStats = function(msg) {
     UserStats
@@ -112,3 +117,5 @@ var updateUserName = function(msg, stats) {
     // Update the username to the most proper one available
     stats.username = msg.from.username || msg.from.first_name || msg.from.id;
 }
+
+startBot();
