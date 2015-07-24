@@ -125,7 +125,7 @@ var updateAverageResponseTime = function(stats) {
 
 var updateFRR = function(stats) {
     // Need to make an actual algorithm that makes sense. This is just for testing.
-    stats.user_frr = (0.3 * stats.message_count) + (0.7 * stats.average_message_length)
+    stats.user_frr = Math.floor((0.3 * stats.message_count) + (0.7 * stats.average_message_length));
 }
 
 var updateUserName = function(msg, stats) {
