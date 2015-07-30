@@ -8,6 +8,7 @@ var moment = require('moment');
 var findOneOrCreate = require('mongoose-find-one-or-create');
 var TelegramBot = require('node-telegram-bot-api');
 var Strings = require('./strings.js');
+var CronJob = require('cron').CronJob;
 
 var f = util.format;
 
@@ -38,10 +39,27 @@ var startBot = function() { // Script entry point
                 sendGroupStats(msg);
             else if (msg.text && msg.text == '/statsImage')
                 renderGroupStatsAndSend(msg);
+            else if (msg.text && msg.text == '/startJob')
+                startCronJob(msg);
             else
                 updateUserStats(msg);
         });
     });
+}
+
+var startCronJob = function(msg) {
+    var job = new CronJob({
+        cronTime: '00 22 00 * * 1-7',
+        onTick: function() {
+            bot.sendMessage(msg.chat.id, "This gets fired at 22:00 in GMT+2 every day.");
+            // This is a placeholder until I have something figured out to call here.
+        },
+        start: true,
+        timeZone: 'Europe/Amsterdam'
+    });
+
+    console.log("[CRON] - Every day at 22:00h GMT+2 - Started.");
+    bot.sendMessage(msg.chat.id, "[CRON] - Every day at 22:00h GMT+2 - Started.");
 }
 
 var connectDatabase = function() {
@@ -162,9 +180,8 @@ var updateAverageResponseTime = function(stats) {
 
 var updateFRR = function(stats) {
     // Need to make an actual algorithm that makes sense. This is just for testing.
-    var friendship = (0.3 * stats.message_count) + (0.7 * stats.average_message_length);    
+    var friendship = (0.3 * stats.message_count) + (0.7 * stats.average_message_length);
     stats.user_frr = Math.round(friendship * 100) / 100;
-
 }
 
 var updateUserName = function(msg, stats) {
