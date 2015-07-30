@@ -1,0 +1,69 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link href='http://fonts.googleapis.com/css?family=Roboto:300' rel='stylesheet' type='text/css'>
+    <style type="text/css">
+      * {
+        font-family: 'Roboto', sans-serif;
+        font-weight: 300;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background-color: #DDD;
+      }
+
+      body > * {
+        width: 100%;
+      }
+
+      h1 {
+        text-align: center;
+      }
+
+      table {
+        border-collapse:collapse;
+      }
+
+      table tr td {
+        padding: 2px;
+      }
+
+      tr:nth-child(even) td {
+        background-color: #CCC;
+      }
+
+      tr td:nth-child(1) {
+        text-align: left;
+      }
+
+      tr td:nth-child(2), tr td:nth-child(3) {
+        width: 40px;
+        text-align: center;
+      }
+
+      tr td:nth-child(4) {
+        text-align: right;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Stats for <%- groupname %></h1>
+    <table>
+      <tr>
+        <th><i class="fa fa-user"></i></th>
+        <th><i class="fa fa-comment-o"></i></th>
+        <th><i class="fa fa-arrows-h"></i></th>
+        <th><i class="fa fa-clock-o"></i></th>
+      </tr>
+      <% stats.forEach(function (stat) { %>
+      <tr>
+        <td><%- stat.username %></td>
+        <td><%- stat.message_count %></td>
+        <td><%- stat.average_message_length %></td>
+        <td><%- stat.average_response_time %></td>
+      </tr> 
+      <% }) %>
+    </table>
+  </body>
+</html>

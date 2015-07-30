@@ -1,6 +1,8 @@
 var fs = require('fs');
 var path = require('path');
 var util = require('util');
+var ejs = require('ejs');
+var webshot = require('webshot');
 var mongoose = require('mongoose');
 var moment = require('moment');
 var findOneOrCreate = require('mongoose-find-one-or-create');
@@ -34,6 +36,8 @@ var startBot = function() { // Script entry point
 
             if (msg.text && msg.text == '/stats')
                 sendGroupStats(msg);
+            else if (msg.text && msg.text == '/statsImage')
+                renderGroupStatsAndSend(msg);
             else
                 updateUserStats(msg);
         });
@@ -83,6 +87,39 @@ var sendGroupStats = function(msg) {
 
         console.info("Sent for stats for %s(%d)", msg.chat.title, msg.chat.id);
         bot.sendMessage(msg.chat.id, res);
+    })
+}
+
+var renderGroupStatsAndSend = function(msg) {
+    UserStats
+    .find({ group_id: msg.chat.id })
+    .sort({ message_count : -1, average_message_length: -1 })
+    .then(function (stats) {
+        // Rework numbers a bit. We cant read seconds
+        stats = stats.map(function(stat) {
+            // If we dont do this we cant chage or add fields without risking db integrity
+            stat = stat.toJSON();
+            stat.average_response_time = moment.duration(stat.average_response_time, 'milliseconds').humanize();
+            return stat;
+        })
+
+        var template = fs.readFileSync(path.join(__dirname, 'templates/stats.ejs'), 'utf-8');
+        var rendered = ejs.render(template, { stats: stats, groupname : msg.chat.title });
+        var destDir = path.join(__dirname, 'stats/' + msg.chat.id + '.png');
+        var opts =  {
+            screenSize: {
+                width: 320,
+                height: 1,
+            },
+            shotSize: {
+                width: 'all',
+                height: 'all'
+            },
+            siteType:'html'
+        };
+        webshot(rendered, destDir ,opts, function (err) {
+            bot.sendPhoto(msg.chat.id, destDir)
+        });
     })
 }
 
