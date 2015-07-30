@@ -15,6 +15,7 @@
     "mongoose-find-one-or-create": "~0.2.0",
     "node-telegram-bot-api": "~0.10.0",
     "ejs": "~2.3.3",
-    "webshot": "~0.16.0"
+    "webshot": "~0.16.0",
+    "cron": "~1.0.9"
   }
 }
