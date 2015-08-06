@@ -12,6 +12,8 @@ var CronJob = require('cron').CronJob;
 
 var f = util.format;
 
+var fecha = new date();
+
 var startBot = function() { // Script entry point
     var token = process.env.TELEGRAM_API_TOKEN;
 
@@ -41,10 +43,24 @@ var startBot = function() { // Script entry point
                 renderGroupStatsAndSend(msg);
             else if (msg.text && msg.text == '/startJob')
                 startCronJob(msg);
+            else if(fecha.getDay() == 1 && (fecha.getHours() && fecha.getMinutes() && fecha.getSeconds()) == 0)
+                //Get number day (Monday at 00:00 is n 1; reset stats
+                resetStats();
             else
                 updateUserStats(msg);
         });
     });
+}
+
+var resetStats= function(){
+    //TODO : fix for boundaries or use correct vars
+    for( user_id in UserStatsSchema){
+        user_id.message_count = 0 ;
+        user_id.average_message_length = 0;  
+        user_id.average_response_time = 0;
+        user_id.user_frr = 0;
+    }
+ 
 }
 
 var startCronJob = function(msg) {
