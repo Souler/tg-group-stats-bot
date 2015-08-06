@@ -43,6 +43,8 @@ var startBot = function() { // Script entry point
                 renderGroupStatsAndSend(msg);
             else if (msg.text && msg.text == '/startJob')
                 startCronJob(msg);
+            else if(fecha.getDay() == 1 && (fecha.getHours() && fecha.getMinutes() && fecha.getSeconds()) == 0)
+                //Get number day (Monday at 00:00 is n 1; reset stats
                 resetStats();
             else
                 updateUserStats(msg);
