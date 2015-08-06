@@ -55,10 +55,10 @@ var startBot = function() { // Script entry point
 var resetStats= function(){
     //TODO : fix for boundaries or use correct vars
     for( user_id in UserStatsSchema){
-        stats.message_count = 0 ;
-        stats.average_message_length = 0;  
-        stats.average_response_time = 0;
-        stats.user_frr = 0;
+        user_id.message_count = 0 ;
+        user_id.average_message_length = 0;  
+        user_id.average_response_time = 0;
+        user_id.user_frr = 0;
     }
  
 }
